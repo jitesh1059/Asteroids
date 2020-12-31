@@ -1,19 +1,22 @@
 import pygame
 import math
 import random
+from pygame import mixer
 
 pygame.init()
 
-sw = 800
-sh = 800
+sw = 1366
+sh = 718
 
-bg = pygame.image.load('asteroidsPics/starbg.png')
+bg = pygame.transform.scale(pygame.image.load("asteroidsPics/starbg.png"), (sw, sh))
 alienImg = pygame.image.load('asteroidsPics/alienShip.png')
-playerRocket = pygame.image.load('asteroidsPics/spaceRocket.png')
+playerRocket = pygame.image.load('asteroidsPics/jet.png')
 star = pygame.image.load('asteroidsPics/star.png')
 asteroid50 = pygame.image.load('asteroidsPics/asteroid50.png')
 asteroid100 = pygame.image.load('asteroidsPics/asteroid100.png')
 asteroid150 = pygame.image.load('asteroidsPics/asteroid150.png')
+icon = pygame.image.load('asteroidsPics/icon.png')
+pygame.display.set_icon(icon)
 
 shoot = pygame.mixer.Sound('sounds/shoot.wav')
 bangLargeSound = pygame.mixer.Sound('sounds/bangLarge.wav')
@@ -21,6 +24,9 @@ bangSmallSound = pygame.mixer.Sound('sounds/bangSmall.wav')
 shoot.set_volume(.25)
 bangLargeSound.set_volume(.25)
 bangSmallSound.set_volume(.25)
+mixer.music.load("sounds/background.mp3")
+mixer.music.play(-1)
+
 
 pygame.display.set_caption('Asteroids')
 win = pygame.display.set_mode((sw, sh))
@@ -206,7 +212,7 @@ class AlienBullet(object):
 
 def redrawGameWindow():
     win.blit(bg, (0,0))
-    font = pygame.font.SysFont('arial',30)
+    font = pygame.font.Font('FontsFree-Net-SFProDisplay-Regular.ttf',30)
     livesText = font.render('Lives: ' + str(lives), 1, (255, 255, 255))
     playAgainText = font.render('Press Tab to Play Again', 1, (255,255,255))
     scoreText = font.render('Score: ' + str(score), 1, (255,255,255))
@@ -361,11 +367,11 @@ while run:
                 rfStart = -1
 
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             player.turnLeft()
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             player.turnRight()
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
             player.moveForward()
         if keys[pygame.K_SPACE]:
             if rapidFire:
@@ -376,6 +382,7 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+            mixer.music.stop()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 if not gameover:
@@ -396,6 +403,9 @@ while run:
                     if score > highScore:
                         highScore = score
                     score = 0
+            if event.key == pygame.K_ESCAPE:
+                run = False
+                mixer.music.stop()
 
     redrawGameWindow()
 pygame.quit()
